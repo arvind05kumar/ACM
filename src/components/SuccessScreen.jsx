@@ -29,43 +29,50 @@ export function SuccessScreen({ submittedData }) {
 
   // Client-side Canvas dynamic certificate builder
   const handleDownloadCertificate = () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    // Load the background certificate template
-    img.src = '/certificate_template.png';
-    
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+    // Wait for the signature font to be fully loaded in the browser context
+    document.fonts.ready.then(() => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = '/certificate_template.png';
       
-      // Draw background
-      ctx.drawImage(img, 0, 0);
-      
-      // Configure typography for dynamic name overlay
-      ctx.font = '600 48px "Outfit", "Inter", sans-serif';
-      ctx.fillStyle = '#0f172a'; // Dark slate text color
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // Centered layout calculations (we will tweak these offsets as soon as the template is loaded)
-      const x = canvas.width / 2;
-      const y = canvas.height / 2 + 35;
-      
-      ctx.fillText(studentName, x, y);
-      
-      // Create download trigger
-      const link = document.createElement('a');
-      link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    };
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw certificate background layout
+        ctx.drawImage(img, 0, 0);
+        
+        // Dynamic font sizing to prevent long names from overflowing
+        let fontSize = 72;
+        if (studentName.length > 15) {
+          fontSize = Math.max(48, 72 - (studentName.length - 15) * 1.8);
+        }
+        
+        // Configure typography: Use Alex Brush calligraphy font matching the certificate tone
+        ctx.font = `500 ${fontSize}px "Alex Brush", cursive`;
+        ctx.fillStyle = '#470700'; // Match the exact maroon theme color of the title
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        
+        // Exact name coordinates (centered horizontally at X=504, slightly above the line Y=386)
+        const x = 504;
+        const y = 372;
+        
+        ctx.fillText(studentName, x, y);
+        
+        // Create downlaod trigger
+        const link = document.createElement('a');
+        link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      };
 
-    // Graceful error fallback
-    img.onerror = () => {
-      alert("Please upload the certificate design image as 'public/certificate_template.png' to enable dynamic certificate generation!");
-    };
+      img.onerror = () => {
+        alert("Certificate template not found. Please verify public/certificate_template.png exists.");
+      };
+    });
   };
 
   return (
@@ -175,15 +182,28 @@ export function SuccessScreen({ submittedData }) {
               </span>
             </div>
             
-            <button
-              onClick={handleDownloadCertificate}
-              className="text-xs font-heading font-extrabold text-primary-blue hover:text-blue-400 flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <Download className="h-3.5 w-3.5" />
-              Get Certificate
-            </button>
+            <div className="text-[10px] text-gray-400 font-sans font-semibold uppercase tracking-wider">
+              Verified Attendee
+            </div>
           </div>
         </Card>
+      </motion.div>
+
+      {/* Massive Download Certificate Button */}
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+        className="w-full max-w-sm mt-8"
+      >
+        <Button
+          onClick={handleDownloadCertificate}
+          variant="primary"
+          iconRight={Download}
+          className="w-full py-4 text-sm uppercase tracking-widest font-extrabold rounded-xl shadow-lg shadow-blue-500/25 cursor-pointer hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300"
+        >
+          Download Certificate
+        </Button>
       </motion.div>
 
       {/* Directives for next steps */}
@@ -191,7 +211,7 @@ export function SuccessScreen({ submittedData }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="mt-8 text-center"
+        className="mt-6 text-center"
       >
         <p className="text-xs font-sans font-medium text-gray-400 select-none">
           Thank you for joining. You can now download your digital attendance certificate.
