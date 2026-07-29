@@ -14,7 +14,7 @@ export const CONFIG = {
   collegeName: "CGC Landran",
   organizerName: "ACM Student Chapter",
   poweredByName: "Vision Forge",
-  
+
   // Speakers Configuration (Used in the Speaker section)
   speakers: [
     {
@@ -54,7 +54,7 @@ export const CONFIG = {
 
   // Google Apps Script API URL
   // Replace this with your deployed Google Apps Script Web App URL
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbz_your_script_id_here/exec",
+  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbzStyLm3A-c5kyKUTAx6LR4dF8vLQ6bdPqDDrqgI9PXuG_vl0VOnNH0ycm8GkYBIG97Cg/exec",
 
   // Image Placeholders (If left empty, code will render premium default SVGs)
   eventLogo: "",      // Main event branding logo
