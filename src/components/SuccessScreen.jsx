@@ -27,6 +27,47 @@ export function SuccessScreen({ submittedData }) {
     }
   };
 
+  // Client-side Canvas dynamic certificate builder
+  const handleDownloadCertificate = () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    // Load the background certificate template
+    img.src = '/certificate_template.png';
+    
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw background
+      ctx.drawImage(img, 0, 0);
+      
+      // Configure typography for dynamic name overlay
+      ctx.font = '600 48px "Outfit", "Inter", sans-serif';
+      ctx.fillStyle = '#0f172a'; // Dark slate text color
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Centered layout calculations (we will tweak these offsets as soon as the template is loaded)
+      const x = canvas.width / 2;
+      const y = canvas.height / 2 + 35;
+      
+      ctx.fillText(studentName, x, y);
+      
+      // Create download trigger
+      const link = document.createElement('a');
+      link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+
+    // Graceful error fallback
+    img.onerror = () => {
+      alert("Please upload the certificate design image as 'public/certificate_template.png' to enable dynamic certificate generation!");
+    };
+  };
+
   return (
     <section className="max-w-2xl mx-auto px-4 py-8 select-none flex flex-col items-center">
       
@@ -135,11 +176,11 @@ export function SuccessScreen({ submittedData }) {
             </div>
             
             <button
-              onClick={() => window.print()}
+              onClick={handleDownloadCertificate}
               className="text-xs font-heading font-extrabold text-primary-blue hover:text-blue-400 flex items-center gap-1 transition-colors cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
-              Print Pass
+              Get Certificate
             </button>
           </div>
         </Card>
@@ -153,7 +194,7 @@ export function SuccessScreen({ submittedData }) {
         className="mt-8 text-center"
       >
         <p className="text-xs font-sans font-medium text-gray-400 select-none">
-          Thank you for joining. Please present this ticket at the auditorium entrance.
+          Thank you for joining. You can now download your digital attendance certificate.
         </p>
       </motion.div>
     </section>
