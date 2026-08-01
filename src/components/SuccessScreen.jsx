@@ -45,20 +45,20 @@ export function SuccessScreen({ submittedData }) {
         ctx.drawImage(img, 0, 0);
         
         // Dynamic font sizing to prevent long names from overflowing
-        let fontSize = 72;
+        let fontSize = 54;
         if (studentName.length > 15) {
-          fontSize = Math.max(48, 72 - (studentName.length - 15) * 1.8);
+          fontSize = Math.max(36, 54 - (studentName.length - 15) * 1.2);
         }
         
-        // Configure typography: Use Alex Brush calligraphy font matching the certificate tone
-        ctx.font = `500 ${fontSize}px "Alex Brush", cursive`;
+        // Configure typography: Use Playfair Display italic font for a formal, premium certificate tone
+        ctx.font = `italic 500 ${fontSize}px "Playfair Display", Georgia, serif`;
         ctx.fillStyle = '#470700'; // Match the exact maroon theme color of the title
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
         
-        // Exact name coordinates (centered horizontally at X=504, slightly above the line Y=386)
-        const x = 504;
-        const y = 372;
+        // Exact name coordinates (centered horizontally on the template line at X=584, slightly above the line Y=386)
+        const x = 584;
+        const y = 378;
         
         ctx.fillText(studentName, x, y);
         
