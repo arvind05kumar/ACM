@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, FileCheck, HelpCircle, Smartphone } from 'lucide-react';
+import { Send, FileCheck } from 'lucide-react';
 import { CONFIG } from '../config/config';
 import { Card } from './ui/Card';
 import { Input } from './ui/Input';
@@ -73,45 +73,74 @@ export function AttendanceForm({ onFormSuccess }) {
     setIsLoading(true);
 
     try {
-      // Assemble full payload (user inputs + hidden device info)
-      const payload = {
-        ...formData,
-        ...deviceMeta,
-        action: 'submitAttendance' // action header for Apps Script routing
-      };
-
-      // Set options for POST
-      const response = await fetch(CONFIG.googleAppsScriptUrl, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8' // Standard CORS-friendly Apps Script header
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error('Connection failed. Please check network logs.');
+      const endpoint = CONFIG.googleSheetEndpoint || CONFIG.googleAppsScriptUrl;
+      if (!endpoint || endpoint.trim() === '') {
+        showToast("Google Sheet endpoint is not configured! Please add your Sheet URL in src/config/config.js", "error");
+        setIsLoading(false);
+        return;
       }
 
-      const result = await response.json();
+      const timestamp = new Date().toLocaleString();
 
-      if (result.status === 'duplicate') {
-        showToast(result.message || "You have already marked your attendance.", "error");
-      } else if (result.status === 'success') {
-        onFormSuccess(result.data || formData);
+      // Assemble full payload (user inputs + friendly headers + device meta)
+      const payload = {
+        fullName: formData.fullName,
+        rollNumber: formData.rollNumber,
+        mobile: formData.mobile,
+        college: formData.college,
+        course: formData.course,
+        section: formData.section,
+        semester: formData.semester,
+        timestamp: timestamp,
+        browser: deviceMeta.browser || '',
+        operatingSystem: deviceMeta.operatingSystem || '',
+        device: deviceMeta.device || '',
+        // Column header name fallbacks
+        "Full Name": formData.fullName,
+        "Roll Number": formData.rollNumber,
+        "Mobile Number": formData.mobile,
+        "College": formData.college,
+        "Course": formData.course,
+        "Section": formData.section,
+        "Semester": formData.semester,
+        "Timestamp": timestamp
+      };
+
+      const isSheetDB = endpoint.includes('sheetdb.io');
+      const requestBody = isSheetDB
+        ? JSON.stringify({ data: [payload] })
+        : JSON.stringify(payload);
+
+      // Set options for POST
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: requestBody
+      });
+
+      const responseText = await response.text();
+      let result = {};
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {}
+
+      if (response.ok || response.status === 201 || result.created === 1) {
+        onFormSuccess(payload);
       } else {
-        throw new Error(result.message || 'Verification rejected by Sheet compiler.');
+        if (result.status === 'duplicate') {
+          showToast(result.message || "You have already marked your attendance.", "error");
+        } else {
+          const errorMsg = result.error || result.message || "Failed to record response in Google Sheet.";
+          showToast(errorMsg, "error");
+        }
       }
 
     } catch (err) {
       console.error('Submission Error:', err);
-      // For local testing: if Google Apps script is not yet configured, show instructions.
-      if (CONFIG.googleAppsScriptUrl.includes('your_script_id_here')) {
-        showToast("Apps Script URL is not configured. Setup Google Sheet using our Integration Guide!", "error");
-      } else {
-        showToast("Server connection error. Please try again.", "error");
-      }
+      showToast("Server connection error. Please check your Google Sheet API Endpoint URL in src/config/config.js", "error");
     } finally {
       setIsLoading(false);
     }
@@ -249,7 +278,7 @@ export function AttendanceForm({ onFormSuccess }) {
                   ${errors.semester ? 'border-red-400 focus:border-red-500' : 'border-gray-800 focus:border-primary-blue'}`}
               >
                 <option value="" className="bg-gray-950 text-gray-400">Select Semester</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                {[1, 3, 5, 7].map((sem) => (
                   <option key={sem} value={sem} className="bg-gray-950 text-gray-200">
                     Semester {sem}
                   </option>
@@ -260,16 +289,6 @@ export function AttendanceForm({ onFormSuccess }) {
                   {errors.semester}
                 </span>
               )}
-            </div>
-          </div>
-
-          {/* Extra Info: Note on security and privacy */}
-          <div className="pt-2 text-left">
-            <div className="rounded-xl bg-blue-950/20 border border-blue-900/30 p-4 flex gap-3 text-xs text-gray-400 leading-relaxed font-sans font-medium">
-              <HelpCircle className="h-5 w-5 text-primary-blue shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-gray-300">Security Note:</span> To prevent duplicate submissions, roll numbers are compiled in real-time. Operating system version <span className="font-semibold text-gray-300">({deviceMeta.operatingSystem})</span>, browser version <span className="font-semibold text-gray-300">({deviceMeta.browser})</span>, and submission timestamp are logged securely.
-              </div>
             </div>
           </div>
 

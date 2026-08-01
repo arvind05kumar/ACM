@@ -28,51 +28,51 @@ export function SuccessScreen({ submittedData }) {
   };
 
   // Client-side Canvas dynamic certificate builder
-  const handleDownloadCertificate = () => {
-    // Wait for the signature font to be fully loaded in the browser context
-    document.fonts.ready.then(() => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.src = '/certificate_template.png';
-      
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Draw certificate background layout
-        ctx.drawImage(img, 0, 0);
-        
-        // Dynamic font sizing to prevent long names from overflowing
-        let fontSize = 54;
-        if (studentName.length > 15) {
-          fontSize = Math.max(36, 54 - (studentName.length - 15) * 1.2);
-        }
-        
-        // Configure typography: Use Playfair Display italic font for a formal, premium certificate tone
-        ctx.font = `italic 500 ${fontSize}px "Playfair Display", Georgia, serif`;
-        ctx.fillStyle = '#470700'; // Match the exact maroon theme color of the title
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        
-        // Exact name coordinates (centered horizontally on the template line at X=584, slightly above the line Y=386)
-        const x = 584;
-        const y = 378;
-        
-        ctx.fillText(studentName, x, y);
-        
-        // Create downlaod trigger
-        const link = document.createElement('a');
-        link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      };
+  const handleDownloadCertificate = async () => {
+    // Explicitly load the font in browser context before canvas render
+    try {
+      await document.fonts.load('italic 600 48px "Playfair Display"');
+      await document.fonts.ready;
+    } catch (e) {
+      console.warn("Font loading fallback", e);
+    }
 
-      img.onerror = () => {
-        alert("Certificate template not found. Please verify public/certificate_template.png exists.");
-      };
-    });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = '/certificate_template.png';
+    
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw certificate background layout
+      ctx.drawImage(img, 0, 0);
+      
+      // UNIFORM 1-FONT SPECIFICATION FOR ALL STUDENTS:
+      // Fixed 48px Playfair Display font for all student names
+      ctx.font = 'italic 600 48px "Playfair Display", Georgia, serif';
+      ctx.fillStyle = '#470700'; // Match the exact maroon theme color of the title
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      
+      // Exact name coordinates (centered horizontally on the template line at X=584, Y=378)
+      const x = 584;
+      const y = 378;
+      
+      ctx.fillText(studentName, x, y);
+      
+      // Create download trigger
+      const link = document.createElement('a');
+      link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+
+    img.onerror = () => {
+      alert("Certificate template not found. Please verify public/certificate_template.png exists.");
+    };
   };
 
   return (

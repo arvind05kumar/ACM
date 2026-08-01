@@ -44,17 +44,18 @@ export const CONFIG = {
   instagramPage1: {
     username: "@acm_cec",
     url: "https://www.instagram.com/acm_cec/", // Page 1 URL
-    countdownSeconds: 8 // Enforces 8-second countdown
+    countdownSeconds: 13 // Increased by 10 seconds total
   },
   instagramPage2: {
     username: "@visionforge.labs",
     url: "https://www.instagram.com/visionforge.labs/", // Page 2 URL
-    countdownSeconds: 8 // Enforces 8-second countdown
+    countdownSeconds: 13 // Increased by 10 seconds total
   },
 
-  // Google Apps Script API URL
-  // Replace this with your deployed Google Apps Script Web App URL
-  googleAppsScriptUrl: "https://script.google.com/macros/s/AKfycbzStyLm3A-c5kyKUTAx6LR4dF8vLQ6bdPqDDrqgI9PXuG_vl0VOnNH0ycm8GkYBIG97Cg/exec",
+  // Google Sheet API Endpoint URL
+  // Replace this with your SheetMonkey.io / SheetDB.io / Webhook URL to store data in Google Sheets without Apps Script code!
+  googleSheetEndpoint: "https://sheetdb.io/api/v1/mk5g8gm84q3sr",
+  googleAppsScriptUrl: "", // Legacy fallback
 
   // Image Placeholders (If left empty, code will render premium default SVGs)
   eventLogo: "",      // Main event branding logo
