@@ -59,7 +59,7 @@ export const CONFIG = {
 
   // Master Student List Configuration
   // Can be a local JSON file ("/master_students.json"), local CSV ("/master_students.csv"), or a published Google Sheet CSV URL
-  masterStudentListUrl: "/master_students.json",
+  masterStudentListUrl: "/master_students.csv",
 
   // Image Placeholders (If left empty, code will render premium default SVGs)
   eventLogo: "",      // Main event branding logo
