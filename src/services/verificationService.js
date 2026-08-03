@@ -127,7 +127,7 @@ export function verifyStudent(input, masterList) {
 
   if (!targetRoll) {
     return {
-      status: 'Unverified',
+      status: '❌ Unverified',
       remarks: 'Roll Number Not Found'
     };
   }
@@ -140,7 +140,7 @@ export function verifyStudent(input, masterList) {
   // If Roll Number is NOT found
   if (!matchedStudent) {
     return {
-      status: 'Unverified',
+      status: '❌ Unverified',
       remarks: 'Roll Number Not Found'
     };
   }
@@ -150,12 +150,12 @@ export function verifyStudent(input, masterList) {
 
   if (targetNameNormalized === masterNameNormalized) {
     return {
-      status: 'Verified',
+      status: '✅ Verified',
       remarks: '-'
     };
   } else {
     return {
-      status: 'Unverified',
+      status: '❌ Unverified',
       remarks: 'Name Mismatch'
     };
   }

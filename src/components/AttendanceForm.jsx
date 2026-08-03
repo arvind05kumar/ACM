@@ -82,13 +82,13 @@ export function AttendanceForm({ onFormSuccess }) {
       }
 
       // 1. Pre-submission verification against Master Student List
-      let verification = { status: 'Unverified', remarks: 'Verification Pending' };
+      let verification = { status: '❌ Unverified', remarks: 'Verification Pending' };
       try {
         const masterList = await loadMasterStudentList(CONFIG.masterStudentListUrl);
         verification = verifyStudent(formData, masterList);
       } catch (vErr) {
         console.warn("Could not load master list for verification:", vErr);
-        verification = { status: 'Unverified', remarks: 'Master List Unavailable' };
+        verification = { status: '❌ Unverified', remarks: 'Master List Unavailable' };
       }
 
       const timestamp = new Date().toLocaleString();
