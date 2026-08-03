@@ -6,7 +6,7 @@
  */
 export const CONFIG = {
   // Event Details
-  eventName: "ACM DevSummit 2026",
+  eventName: "ACM Aadhyant 2026",
   eventTagline: "Building the Next Generation of Open Source & AI Tech",
   eventDate: "Tuesday, 4th August, 2026",
   eventTime: "10:00 AM - 03:00 PM",
@@ -14,6 +14,7 @@ export const CONFIG = {
   collegeName: "CGC Landran",
   organizerName: "ACM Student Chapter",
   poweredByName: "Vision Forge",
+  poweredByUrl: "https://visionforgelabs.in/",
 
   // Speakers Configuration (Used in the Speaker section)
   speakers: [

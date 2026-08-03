@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Calendar, ArrowRight, ShieldCheck, Download, Award } from 'lucide-react';
 import { CONFIG } from '../config/config';
@@ -27,52 +27,83 @@ export function SuccessScreen({ submittedData }) {
     }
   };
 
+  const [isGenerating, setIsGenerating] = useState(false);
+
   // Client-side Canvas dynamic certificate builder
   const handleDownloadCertificate = async () => {
-    // Explicitly load the font in browser context before canvas render
+    if (isGenerating) return;
+    setIsGenerating(true);
+
     try {
-      await document.fonts.load('italic 600 48px "Playfair Display"');
-      await document.fonts.ready;
-    } catch (e) {
-      console.warn("Font loading fallback", e);
+      // Preload font if available
+      try {
+        await document.fonts.load('italic 600 46px "Playfair Display"');
+        await document.fonts.ready;
+      } catch (e) {
+        console.warn("Font loading fallback", e);
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = '/certificate_template.png';
+      
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw certificate template background
+        ctx.drawImage(img, 0, 0);
+        
+        // Dynamic font sizing based on name length
+        let fontSize = 46;
+        ctx.font = `italic 600 ${fontSize}px "Playfair Display", Georgia, "Times New Roman", serif`;
+        ctx.fillStyle = '#470700'; // Maroon theme matching event title
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic'; // Universal baseline consistency across iOS/Android
+        
+        // Underline line span: X=290 to X=850 (Center=570). Underline Y=385.
+        const maxAllowedWidth = 520;
+        let textWidth = ctx.measureText(studentName).width;
+        
+        if (textWidth > maxAllowedWidth) {
+          fontSize = Math.floor(fontSize * (maxAllowedWidth / textWidth));
+          ctx.font = `italic 600 ${fontSize}px "Playfair Display", Georgia, "Times New Roman", serif`;
+        }
+        
+        // Exact name coordinates (Center X=570, Alphabetic Baseline Y=376)
+        const x = 570;
+        const y = 376;
+        
+        ctx.fillText(studentName, x, y);
+        
+        // Cross-platform mobile reliable download using blob
+        canvas.toBlob((blob) => {
+          setIsGenerating(false);
+          if (!blob) {
+            alert("Failed to generate certificate image.");
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+        }, 'image/png');
+      };
+
+      img.onerror = () => {
+        setIsGenerating(false);
+        alert("Certificate template not found. Please verify public/certificate_template.png exists.");
+      };
+    } catch (err) {
+      setIsGenerating(false);
+      console.error("Certificate generation error:", err);
     }
-
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = '/certificate_template.png';
-    
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      
-      // Draw certificate background layout
-      ctx.drawImage(img, 0, 0);
-      
-      // UNIFORM 1-FONT SPECIFICATION FOR ALL STUDENTS:
-      // Fixed 48px Playfair Display font for all student names
-      ctx.font = 'italic 600 48px "Playfair Display", Georgia, serif';
-      ctx.fillStyle = '#470700'; // Match the exact maroon theme color of the title
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      
-      // Exact name coordinates (centered horizontally on the template line at X=584, Y=378)
-      const x = 584;
-      const y = 378;
-      
-      ctx.fillText(studentName, x, y);
-      
-      // Create download trigger
-      const link = document.createElement('a');
-      link.download = `Certificate_${studentName.replace(/\s+/g, '_')}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    };
-
-    img.onerror = () => {
-      alert("Certificate template not found. Please verify public/certificate_template.png exists.");
-    };
   };
 
   return (
@@ -199,10 +230,11 @@ export function SuccessScreen({ submittedData }) {
         <Button
           onClick={handleDownloadCertificate}
           variant="primary"
-          iconRight={Download}
-          className="w-full py-4 text-sm uppercase tracking-widest font-extrabold rounded-xl shadow-lg shadow-blue-500/25 cursor-pointer hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300"
+          iconRight={isGenerating ? undefined : Download}
+          disabled={isGenerating}
+          className="w-full py-4 text-sm uppercase tracking-widest font-extrabold rounded-xl shadow-lg shadow-blue-500/25 cursor-pointer hover:shadow-xl hover:shadow-blue-500/35 transition-all duration-300 disabled:opacity-70"
         >
-          Download Certificate
+          {isGenerating ? "Generating Certificate..." : "Download Certificate"}
         </Button>
       </motion.div>
 

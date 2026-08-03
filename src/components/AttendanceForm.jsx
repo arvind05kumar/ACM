@@ -114,13 +114,10 @@ export function AttendanceForm({ onFormSuccess }) {
         device: deviceMeta.device || '',
         status: verification.status,
         remarks: verification.remarks,
-        Status: verification.status,
-        Remarks: verification.remarks,
         // Column header name fallbacks for SheetDB / SheetMonkey / Google Sheets
         "Full Name": formData.fullName,
         "Email": formData.email,
         "Email Address": formData.email,
-        "email": formData.email,
         "Roll Number": formData.rollNumber,
         "Mobile Number": formData.mobile,
         "College": formData.college,
@@ -129,13 +126,9 @@ export function AttendanceForm({ onFormSuccess }) {
         "Semester": formData.semester,
         "Interested in Internship": internshipVal,
         "Internship": internshipVal,
-        "internshipInterest": internshipVal,
-        "internship": internshipVal,
         "Timestamp": timestamp,
         "Status": verification.status,
-        "Remarks": verification.remarks,
-        "status": verification.status,
-        "remarks": verification.remarks
+        "Remarks": verification.remarks
       };
 
       const isSheetDB = endpoint.includes('sheetdb.io');

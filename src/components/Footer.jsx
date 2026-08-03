@@ -26,14 +26,28 @@ export function Footer() {
           
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-gray-400 font-sans font-normal uppercase">Powered by</span>
-            <span className="text-gray-300 hover:text-primary-blue transition-colors cursor-default">Vision Forge</span>
+            <a 
+              href={CONFIG.poweredByUrl || "https://visionforgelabs.in/"} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-gray-300 hover:text-primary-blue transition-colors cursor-pointer"
+            >
+              {CONFIG.poweredByName}
+            </a>
           </div>
 
           <span className="text-gray-700">|</span>
 
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-gray-400 font-sans font-normal uppercase">Designed by</span>
-            <span className="text-gray-300 hover:text-primary-blue transition-colors cursor-default">Vision Forge</span>
+            <a 
+              href={CONFIG.poweredByUrl || "https://visionforgelabs.in/"} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-gray-300 hover:text-primary-blue transition-colors cursor-pointer"
+            >
+              {CONFIG.poweredByName}
+            </a>
           </div>
         </div>
       </div>
