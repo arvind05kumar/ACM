@@ -27,7 +27,7 @@ export function AttendanceForm({ onFormSuccess }) {
     section: '',
     semester: '',
     mobile: '',
-    internshipInterest: 'Yes'
+    internshipInterest: ''
   });
 
   // Inline errors state
@@ -94,6 +94,7 @@ export function AttendanceForm({ onFormSuccess }) {
       }
 
       const timestamp = new Date().toLocaleString();
+      const internshipVal = formData.internshipInterest || '-';
 
       // Assemble full payload (user inputs + friendly headers + device meta + verification)
       const payload = {
@@ -105,8 +106,8 @@ export function AttendanceForm({ onFormSuccess }) {
         course: formData.course,
         section: formData.section,
         semester: formData.semester,
-        internshipInterest: formData.internshipInterest,
-        internship: formData.internshipInterest,
+        internshipInterest: internshipVal,
+        internship: internshipVal,
         timestamp: timestamp,
         browser: deviceMeta.browser || '',
         operatingSystem: deviceMeta.operatingSystem || '',
@@ -126,10 +127,10 @@ export function AttendanceForm({ onFormSuccess }) {
         "Course": formData.course,
         "Section": formData.section,
         "Semester": formData.semester,
-        "Interested in Internship": formData.internshipInterest,
-        "Internship": formData.internshipInterest,
-        "internshipInterest": formData.internshipInterest,
-        "internship": formData.internshipInterest,
+        "Interested in Internship": internshipVal,
+        "Internship": internshipVal,
+        "internshipInterest": internshipVal,
+        "internship": internshipVal,
         "Timestamp": timestamp,
         "Status": verification.status,
         "Remarks": verification.remarks,
@@ -341,7 +342,7 @@ export function AttendanceForm({ onFormSuccess }) {
           {/* Row 5: Internship Interest Selector */}
           <div className="flex flex-col gap-2 text-left pt-1">
             <label className="text-xs font-heading font-semibold text-gray-400 uppercase tracking-wider pl-1 flex items-center justify-between">
-              <span>Are you interested in Internship? <span className="text-red-500">*</span></span>
+              <span>Are you interested in Internship (With VisionForge Labs)?</span>
             </label>
 
             <div className="grid grid-cols-2 gap-4">
@@ -353,10 +354,10 @@ export function AttendanceForm({ onFormSuccess }) {
                     type="button"
                     disabled={isLoading}
                     onClick={() => {
-                      setFormData((prev) => ({ ...prev, internshipInterest: option }));
-                      if (errors.internshipInterest) {
-                        setErrors((prev) => ({ ...prev, internshipInterest: null }));
-                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        internshipInterest: isSelected ? '' : option
+                      }));
                     }}
                     className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl border text-sm font-heading font-bold transition-all duration-300 cursor-pointer ${
                       isSelected
@@ -374,11 +375,6 @@ export function AttendanceForm({ onFormSuccess }) {
                 );
               })}
             </div>
-            {errors.internshipInterest && (
-              <span className="text-xs text-red-500 font-semibold pl-1">
-                {errors.internshipInterest}
-              </span>
-            )}
           </div>
 
           {/* Submission Button */}

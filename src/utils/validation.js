@@ -72,10 +72,5 @@ export function validateForm(values) {
     }
   }
 
-  // Internship Interest Validation
-  if (!values.internshipInterest) {
-    errors.internshipInterest = "Please select whether you are interested in an internship.";
-  }
-
   return errors;
 }
