@@ -60,13 +60,14 @@ function doPost(e) {
     
     // Extract parameters
     var fullName = payloadData.fullName ? payloadData.fullName.toString().trim() : "";
+    var email = payloadData.email || payloadData.Email || payloadData["Email Address"] || "";
     var rollNumber = payloadData.rollNumber ? payloadData.rollNumber.toString().trim() : "";
     var college = payloadData.college ? payloadData.college.toString().trim() : "";
     var course = payloadData.course ? payloadData.course.toString().trim() : "";
     var section = payloadData.section ? payloadData.section.toString().trim() : "";
     var semester = payloadData.semester ? payloadData.semester.toString().trim() : "";
     var mobile = payloadData.mobile ? payloadData.mobile.toString().trim() : "";
-    var statusVal = payloadData.Status || payloadData.status || "Unverified";
+    var statusVal = payloadData.Status || payloadData.status || "❌ Unverified";
     var remarksVal = payloadData.Remarks || payloadData.remarks || "-";
     
     // Metadata hidden fields
@@ -94,6 +95,7 @@ function doPost(e) {
       var headers = [
         "Timestamp", 
         "Full Name", 
+        "Email Address",
         "Roll Number", 
         "College", 
         "Course", 
@@ -117,17 +119,18 @@ function doPost(e) {
       lastRow = 1;
     }
 
-    // 5. Duplicate check using Roll Number (Column C / Index 3)
+    // 5. Duplicate check using Roll Number (Column D / Index 4 if Email exists, or Column C)
     if (lastRow > 1) {
-      // Fetch all roll numbers in Column C (starting from Row 2)
-      var rollNumbersRange = sheet.getRange(2, 3, lastRow - 1, 1);
+      // Fetch all roll numbers in Column C/D (starting from Row 2)
+      var rollNumbersRange = sheet.getRange(2, 3, lastRow - 1, 2);
       var rollNumbersValues = rollNumbersRange.getValues();
       
       // Perform case-insensitive string comparison
       var targetRoll = rollNumber.toLowerCase();
       for (var i = 0; i < rollNumbersValues.length; i++) {
-        var existingRoll = rollNumbersValues[i][0].toString().trim().toLowerCase();
-        if (existingRoll === targetRoll) {
+        var colC = rollNumbersValues[i][0].toString().trim().toLowerCase();
+        var colD = rollNumbersValues[i][1].toString().trim().toLowerCase();
+        if (colC === targetRoll || colD === targetRoll) {
           // Release script lock prior to exit
           lock.releaseLock();
           return createJsonResponse({
@@ -142,6 +145,7 @@ function doPost(e) {
     var newRow = [
       timestamp,
       fullName,
+      email,
       rollNumber,
       college,
       course,

@@ -20,6 +20,14 @@ export function validateForm(values) {
     errors.fullName = "Name must be at least 2 characters long.";
   }
 
+  // Email Address Validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!values.email || !values.email.trim()) {
+    errors.email = "Email Address is required.";
+  } else if (!emailRegex.test(values.email.trim())) {
+    errors.email = "Please enter a valid email address.";
+  }
+
   // Roll Number Validation
   if (!values.rollNumber || !values.rollNumber.trim()) {
     errors.rollNumber = "Roll Number is required.";

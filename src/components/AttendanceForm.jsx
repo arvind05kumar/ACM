@@ -20,6 +20,7 @@ export function AttendanceForm({ onFormSuccess }) {
   // 2. Form field states
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     rollNumber: '',
     college: '',
     course: '',
@@ -96,6 +97,7 @@ export function AttendanceForm({ onFormSuccess }) {
       // Assemble full payload (user inputs + friendly headers + device meta + verification)
       const payload = {
         fullName: formData.fullName,
+        email: formData.email,
         rollNumber: formData.rollNumber,
         mobile: formData.mobile,
         college: formData.college,
@@ -112,6 +114,9 @@ export function AttendanceForm({ onFormSuccess }) {
         Remarks: verification.remarks,
         // Column header name fallbacks for SheetDB / SheetMonkey / Google Sheets
         "Full Name": formData.fullName,
+        "Email": formData.email,
+        "Email Address": formData.email,
+        "email": formData.email,
         "Roll Number": formData.rollNumber,
         "Mobile Number": formData.mobile,
         "College": formData.college,
@@ -192,16 +197,31 @@ export function AttendanceForm({ onFormSuccess }) {
       <Card hoverEffect={false} className="border border-gray-800/40 shadow-xl max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           
-          <Input
-            label="Full Name"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Name"
-            required={true}
-            error={errors.fullName}
-            disabled={isLoading}
-          />
+          {/* Row 1: Full Name & Email Address */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label="Full Name"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="Name"
+              required={true}
+              error={errors.fullName}
+              disabled={isLoading}
+            />
+
+            <Input
+              label="Email Address"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="student@gmail.com"
+              required={true}
+              error={errors.email}
+              disabled={isLoading}
+            />
+          </div>
 
           {/* Row 2: Roll Number & Mobile Number */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
