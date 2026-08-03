@@ -8,6 +8,7 @@ import { Button } from './ui/Button';
 import { Toast } from './ui/Toast';
 import { useDeviceDetails } from '../hooks/useDeviceDetails';
 import { validateForm } from '../utils/validation';
+import { loadMasterStudentList, verifyStudent } from '../services/verificationService';
 
 /**
  * Premium glassmorphic Attendance Registration Form.
@@ -80,9 +81,19 @@ export function AttendanceForm({ onFormSuccess }) {
         return;
       }
 
+      // 1. Pre-submission verification against Master Student List
+      let verification = { status: 'Unverified', remarks: 'Verification Pending' };
+      try {
+        const masterList = await loadMasterStudentList(CONFIG.masterStudentListUrl);
+        verification = verifyStudent(formData, masterList);
+      } catch (vErr) {
+        console.warn("Could not load master list for verification:", vErr);
+        verification = { status: 'Unverified', remarks: 'Master List Unavailable' };
+      }
+
       const timestamp = new Date().toLocaleString();
 
-      // Assemble full payload (user inputs + friendly headers + device meta)
+      // Assemble full payload (user inputs + friendly headers + device meta + verification)
       const payload = {
         fullName: formData.fullName,
         rollNumber: formData.rollNumber,
@@ -95,7 +106,9 @@ export function AttendanceForm({ onFormSuccess }) {
         browser: deviceMeta.browser || '',
         operatingSystem: deviceMeta.operatingSystem || '',
         device: deviceMeta.device || '',
-        // Column header name fallbacks
+        Status: verification.status,
+        Remarks: verification.remarks,
+        // Column header name fallbacks for SheetDB / SheetMonkey / Google Sheets
         "Full Name": formData.fullName,
         "Roll Number": formData.rollNumber,
         "Mobile Number": formData.mobile,
@@ -103,7 +116,9 @@ export function AttendanceForm({ onFormSuccess }) {
         "Course": formData.course,
         "Section": formData.section,
         "Semester": formData.semester,
-        "Timestamp": timestamp
+        "Timestamp": timestamp,
+        "Status": verification.status,
+        "Remarks": verification.remarks
       };
 
       const isSheetDB = endpoint.includes('sheetdb.io');

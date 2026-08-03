@@ -57,6 +57,10 @@ export const CONFIG = {
   googleSheetEndpoint: "https://sheetdb.io/api/v1/mk5g8gm84q3sr",
   googleAppsScriptUrl: "", // Legacy fallback
 
+  // Master Student List Configuration
+  // Can be a local JSON file ("/master_students.json"), local CSV ("/master_students.csv"), or a published Google Sheet CSV URL
+  masterStudentListUrl: "/master_students.json",
+
   // Image Placeholders (If left empty, code will render premium default SVGs)
   eventLogo: "",      // Main event branding logo
   logo1: "/acm_logo.png",          // Partner Logo 1 (ACM Logo)
