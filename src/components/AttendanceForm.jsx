@@ -26,7 +26,8 @@ export function AttendanceForm({ onFormSuccess }) {
     course: '',
     section: '',
     semester: '',
-    mobile: ''
+    mobile: '',
+    internshipInterest: 'Yes'
   });
 
   // Inline errors state
@@ -104,6 +105,8 @@ export function AttendanceForm({ onFormSuccess }) {
         course: formData.course,
         section: formData.section,
         semester: formData.semester,
+        internshipInterest: formData.internshipInterest,
+        internship: formData.internshipInterest,
         timestamp: timestamp,
         browser: deviceMeta.browser || '',
         operatingSystem: deviceMeta.operatingSystem || '',
@@ -123,6 +126,10 @@ export function AttendanceForm({ onFormSuccess }) {
         "Course": formData.course,
         "Section": formData.section,
         "Semester": formData.semester,
+        "Interested in Internship": formData.internshipInterest,
+        "Internship": formData.internshipInterest,
+        "internshipInterest": formData.internshipInterest,
+        "internship": formData.internshipInterest,
         "Timestamp": timestamp,
         "Status": verification.status,
         "Remarks": verification.remarks,
@@ -329,6 +336,49 @@ export function AttendanceForm({ onFormSuccess }) {
                 </span>
               )}
             </div>
+          </div>
+
+          {/* Row 5: Internship Interest Selector */}
+          <div className="flex flex-col gap-2 text-left pt-1">
+            <label className="text-xs font-heading font-semibold text-gray-400 uppercase tracking-wider pl-1 flex items-center justify-between">
+              <span>Are you interested in Internship? <span className="text-red-500">*</span></span>
+            </label>
+
+            <div className="grid grid-cols-2 gap-4">
+              {['Yes', 'No'].map((option) => {
+                const isSelected = formData.internshipInterest === option;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    disabled={isLoading}
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, internshipInterest: option }));
+                      if (errors.internshipInterest) {
+                        setErrors((prev) => ({ ...prev, internshipInterest: null }));
+                      }
+                    }}
+                    className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl border text-sm font-heading font-bold transition-all duration-300 cursor-pointer ${
+                      isSelected
+                        ? 'bg-blue-600/20 border-primary-blue text-white shadow-lg shadow-blue-500/10'
+                        : 'bg-gray-950/40 border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-200'
+                    }`}
+                  >
+                    <span className={`h-4 w-4 rounded-full border flex items-center justify-center transition-all ${
+                      isSelected ? 'border-primary-blue bg-primary-blue' : 'border-gray-600'
+                    }`}>
+                      {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+                    </span>
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+            {errors.internshipInterest && (
+              <span className="text-xs text-red-500 font-semibold pl-1">
+                {errors.internshipInterest}
+              </span>
+            )}
           </div>
 
           {/* Submission Button */}

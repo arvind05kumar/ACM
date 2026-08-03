@@ -67,6 +67,7 @@ function doPost(e) {
     var section = payloadData.section ? payloadData.section.toString().trim() : "";
     var semester = payloadData.semester ? payloadData.semester.toString().trim() : "";
     var mobile = payloadData.mobile ? payloadData.mobile.toString().trim() : "";
+    var internshipInterest = payloadData.internshipInterest || payloadData.internship || payloadData["Interested in Internship"] || payloadData.Internship || "Yes";
     var statusVal = payloadData.Status || payloadData.status || "❌ Unverified";
     var remarksVal = payloadData.Remarks || payloadData.remarks || "-";
     
@@ -102,6 +103,7 @@ function doPost(e) {
         "Section", 
         "Semester", 
         "Mobile Number", 
+        "Interested in Internship",
         "Status",
         "Remarks",
         "Browser", 
@@ -152,6 +154,7 @@ function doPost(e) {
       section,
       semester,
       mobile,
+      internshipInterest,
       statusVal,
       remarksVal,
       browser,
