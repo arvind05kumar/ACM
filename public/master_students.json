@@ -305,7 +305,11 @@
   },
   {
     "Student Name": "Aman kumar",
+<<<<<<< HEAD
     "Roll Number": "26CEC015R196"
+=======
+    "Roll Number": "26CEC015R196,"
+>>>>>>> 5ca06e3 (Save local update to master_students.json)
   },
   {
     "Student Name": "Sohail khan",
