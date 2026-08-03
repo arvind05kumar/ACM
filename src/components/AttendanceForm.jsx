@@ -106,6 +106,8 @@ export function AttendanceForm({ onFormSuccess }) {
         browser: deviceMeta.browser || '',
         operatingSystem: deviceMeta.operatingSystem || '',
         device: deviceMeta.device || '',
+        status: verification.status,
+        remarks: verification.remarks,
         Status: verification.status,
         Remarks: verification.remarks,
         // Column header name fallbacks for SheetDB / SheetMonkey / Google Sheets
@@ -118,7 +120,9 @@ export function AttendanceForm({ onFormSuccess }) {
         "Semester": formData.semester,
         "Timestamp": timestamp,
         "Status": verification.status,
-        "Remarks": verification.remarks
+        "Remarks": verification.remarks,
+        "status": verification.status,
+        "remarks": verification.remarks
       };
 
       const isSheetDB = endpoint.includes('sheetdb.io');
